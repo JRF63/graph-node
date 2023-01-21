@@ -425,7 +425,17 @@ pub async fn create_ethereum_networks_for_chain(
 
             let transport = match web3.transport {
                 Rpc => Transport::new_rpc(Url::parse(&web3.url)?, web3.headers.clone()),
-                Ipc => Transport::new_ipc(&web3.url).await,
+                Ipc => {
+                    #[cfg(unix)]
+                    {
+                        Transport::new_ipc(&web3.url).await
+                    }
+
+                    #[cfg(not(unix))]
+                    {
+                        anyhow::bail!("IPC transport is only supported on Unix")
+                    }
+                }
                 Ws => Transport::new_ws(&web3.url).await,
             };
 

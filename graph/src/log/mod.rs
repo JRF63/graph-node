@@ -32,9 +32,10 @@ pub mod factory;
 pub mod split;
 
 pub fn logger(show_debug: bool) -> Logger {
-    let use_color = isatty::stdout_isatty();
-    let decorator = slog_term::TermDecorator::new().build();
-    let drain = CustomFormat::new(decorator, use_color).fuse();
+    // let use_color = isatty::stdout_isatty();
+    // let decorator = slog_term::TermDecorator::new().build();
+    // let drain = CustomFormat::new(decorator, use_color).fuse();
+    let drain = slog_json::Json::default(std::io::stderr()).fuse();
     let drain = slog_envlogger::LogBuilder::new(drain)
         .filter(
             None,
